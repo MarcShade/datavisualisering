@@ -56,6 +56,9 @@ function createWeatherGraph() {
   // console.log(forecastDays)
   for (let i = 0; i < 24 * forecastDays; i++) {
     strokeWeight(2);
+    if (i % forecastDays != 0) {
+      continue;
+    }
     currX = originX + i * (canvasX-40)/(24 * forecastDays);
     currY = originY - graphHeight/60 * weatherData[i];
     circle(currX, currY, 10);
@@ -66,11 +69,18 @@ function createWeatherGraph() {
     prevY = currY;
 
     line(currX, graphHeight + graphY - 10, currX, graphHeight + graphY + 10)
-    text(i, currX - 50, graphHeight + graphY + 20, 100, 100);
+    text(i % 24, currX - 50, graphHeight + graphY + 20, 100, 100);
+  }
+
+  // fill her for at ændre farven
+  for (let i = 1; i <= forecastDays; i++) {
+    let x = (1000-40) / (forecastDays) * i
+    line(x, graphY, x, graphHeight + graphY);  
   }
 }
 
 function processWeatherData(data) {
+  console.log(data)
   weatherData = data.hourly.temperature_2m;
   timeData = data.hourly.time;
   date = timeData[0].substring(0, 10);
