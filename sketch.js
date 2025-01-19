@@ -6,12 +6,14 @@ let latitude;
 
 let weatherData;
 let timeData;
+let dateData;
 
 let date;
 
 let forecastDays = 1;
 
-
+let maxTemp;
+let minTemp;
 
 const graphHeight = 500;
 const graphY = (canvasY - graphHeight) / 2;
@@ -43,10 +45,11 @@ function createWeatherGraph() {
 
   strokeWeight(1);
 
+  // numbers on the y-axis and a line from every number
   for (let i = -25; i < 30; i += 5) {
     line(40, originY - graphHeight/60 * i, canvasX - 20, originY - graphHeight/60 * i);
     strokeWeight(0)
-    text(i, -30, originY - graphHeight/60 * i - 5, 100, 100);
+    text(i + "°", -32, originY - graphHeight/60 * i - 5, 100, 100);
     strokeWeight(1)
   } 
 
@@ -59,9 +62,14 @@ function createWeatherGraph() {
 
 
   // fill her for at ændre farven
+  forecastDays = int(forecastDays)
   for (let i = 1; i <= forecastDays; i++) {
-    let x = (1000-40) / (forecastDays) * i
-    line(x, graphY, x, graphHeight + graphY);  
+    if (i != forecastDays) {
+      let x = 1000 / (forecastDays) * i + 40 * (forecastDays - i)/ forecastDays;
+      line(x, graphY, x, graphHeight + graphY);  
+    }
+    const expression = 940/forecastDays * (i-1) + (1/(forecastDays * 2)) * 940
+    text(dateData[i-1], expression, 100, 100, 100);
   }
 
   // console.log(forecastDays)
@@ -100,6 +108,28 @@ function processWeatherData(data) {
   console.log(data)
   weatherData = data.hourly.temperature_2m;
   timeData = data.hourly.time;
+  dateData = timeData.map(element => element.substring(5, 10))
+  dateData = [...new Set(dateData)];
+
+  maxTemp = Math.max(...weatherData);
+  minTemp = Math.min(...weatherData);
+
+  console.log(maxTemp)
+  console.log(minTemp)
+
+  maxTemp = 5 * (Math.floor(maxTemp / 5) + 1)
+  minTemp = 5 * (Math.floor(minTemp / 5))
+
+  console.log(maxTemp)
+  console.log(minTemp)
+
+  // Fuck everything about this fix
+  for (let i = 0; i < dateData.length; i++) {
+    let month = dateData[i].substring(0,2)
+    let date = dateData[i].substring(3,5)
+    dateData[i] = date + "/" + month
+  }
+
   date = timeData[0].substring(0, 10);
 
   timeData = timeData.map(element => element.substring(11, 16))
