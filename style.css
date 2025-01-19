@@ -1,10 +1,73 @@
 html, body {
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
+  width: 100%;
 }
 
-canvas {
-  display: block;
+
+
+.header {
+  width: 100%;
+  background-color: #111125;
+  height: 5rem;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: Inter, sans-serif
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('assets/download.png');
+  background-size: 100% 90%;
+  width: 100%;
+  height: 200%;
+  overflow: hidden;
+  margin: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #2D2F3F;
+  width: auto;
+  padding: 0px 0px 200px 0px;
+}
+
+.location-text {
+  font-family: Inter, sans-serif;
+  color: white;
+  padding: 24px;
+  margin: 0;
+  text-align: center;
+}
+
+#region-text {
+  margin-top: 10px;
+  color: #C6C6C6
+}
+
+h3 {
+  margin: 0;
+  font-size: 1.25em;
+}
+
+h2 {
+  margin: 0;
+  font-size: 3em;
+}
+
+div {
+  padding: 0;
+  margin: 0;
+}
+
+#canvas {
+  padding: 0px 0px 00px 0px;
 }
