@@ -1,5 +1,5 @@
 const canvasX = 1000;
-const canvasY = 1600;
+const canvasY = 700;
 
 let longitude;
 let latitude;
@@ -11,17 +11,22 @@ let date;
 
 let forecastDays = 1;
 
-// Describes the graphs y-position. Origin is top. This is helpful for when Marc's indecisive ass has to move my shit. Fuckass groupmember.
-const graphY = 500;
+
 
 const graphHeight = 500;
+const graphY = (canvasY - graphHeight) / 2;
 
 function createWeatherGraph() {
-  createCanvas(canvasX, canvasY);
-  background("lightgray");
+  let canvas = createCanvas(canvasX, canvasY);
+  canvas.parent("#canvas")
+  loadFont("assets/Inter-Regular.woff2")
+  textFont("Inter");
+  // background("#2D2F3F");
   textAlign(CENTER);
+  textSize(16);
 
-  fill("black")
+  fill("white")
+  stroke("darkgrey")
 
 
   //Setting up the graph
@@ -40,9 +45,9 @@ function createWeatherGraph() {
 
   for (let i = -25; i < 30; i += 5) {
     line(40, originY - graphHeight/60 * i, canvasX - 20, originY - graphHeight/60 * i);
-    // translate(width, 0)
-    
+    strokeWeight(0)
     text(i, -30, originY - graphHeight/60 * i - 5, 100, 100);
+    strokeWeight(1)
   } 
 
 
@@ -53,7 +58,31 @@ function createWeatherGraph() {
   let prevY = null;
 
 
+  // fill her for at ændre farven
+  for (let i = 1; i <= forecastDays; i++) {
+    let x = (1000-40) / (forecastDays) * i
+    line(x, graphY, x, graphHeight + graphY);  
+  }
+
   // console.log(forecastDays)
+  for (let i = 0; i < 24 * forecastDays; i++) {
+    strokeWeight(2);
+    if (i  % forecastDays != 0) {
+      continue;
+    }
+    currX = originX + i * (canvasX-40)/(24 * forecastDays);
+    currY = originY - graphHeight/60 * weatherData[i];
+    if (prevX != null) {
+      line(currX, currY, prevX, prevY);
+    }
+    prevX = currX
+    prevY = currY
+
+    line(currX, graphHeight + graphY - 10, currX, graphHeight + graphY + 10)
+    strokeWeight(0)
+    text(i % 24, currX - 50, graphHeight + graphY + 20, 100, 100);
+  }
+  
   for (let i = 0; i < 24 * forecastDays; i++) {
     strokeWeight(2);
     if (i % forecastDays != 0) {
@@ -61,21 +90,9 @@ function createWeatherGraph() {
     }
     currX = originX + i * (canvasX-40)/(24 * forecastDays);
     currY = originY - graphHeight/60 * weatherData[i];
+    
     circle(currX, currY, 10);
-    if (prevX != null) {
-      line(currX, currY, prevX, prevY);
-    }
-    prevX = currX;
     prevY = currY;
-
-    line(currX, graphHeight + graphY - 10, currX, graphHeight + graphY + 10)
-    text(i % 24, currX - 50, graphHeight + graphY + 20, 100, 100);
-  }
-
-  // fill her for at ændre farven
-  for (let i = 1; i <= forecastDays; i++) {
-    let x = (1000-40) / (forecastDays) * i
-    line(x, graphY, x, graphHeight + graphY);  
   }
 }
 
@@ -92,13 +109,16 @@ function processWeatherData(data) {
 function processIPData(data) {
   longitude = data.longitude
   latitude = data.latitude
+  
+  document.getElementById("city-text").innerHTML = data.city
+  document.getElementById("region-text").innerHTML = `${data.region}, ${data.country}`
 
-  loadJSON(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&forecast_days=${forecastDays}`, processWeatherData);
+  loadJSON(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&forecast_days=${forecastDays}&current=weather_code`, processWeatherData);
 }
 
 function setup() {
   mySelect = createSelect();
-  mySelect.position(920/2, graphY - 20);
+  mySelect.parent("content")
 
   for (let i = 1; i <= 7; i++) {
     mySelect.option(i);
