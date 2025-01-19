@@ -53,26 +53,23 @@ function createWeatherGraph() {
     strokeWeight(1)
   } 
 
-
   let currX = null;
   let currY = null;
 
   let prevX = null;
   let prevY = null;
 
-
-  // fill her for at ændre farven
+  // Drawing horizontal lines and dates on the graph
   forecastDays = int(forecastDays)
   for (let i = 1; i <= forecastDays; i++) {
     if (i != forecastDays) {
       let x = 1000 / (forecastDays) * i + 40 * (forecastDays - i)/ forecastDays;
       line(x, graphY, x, graphHeight + graphY);  
     }
-    const expression = 940/forecastDays * (i-1) + (1/(forecastDays * 2)) * 940
-    text(dateData[i-1], expression, 100, 100, 100);
+    text(dateData[i-1], 940/forecastDays * (i-1) + (1/(forecastDays * 2)) * 940, 100, 100, 100);
   }
 
-  // console.log(forecastDays)
+  // Drawing the graph 
   for (let i = 0; i < 24 * forecastDays; i++) {
     strokeWeight(2);
     if (i  % forecastDays != 0) {
@@ -91,6 +88,7 @@ function createWeatherGraph() {
     text(i % 24, currX - 50, graphHeight + graphY + 20, 100, 100);
   }
   
+  // Drawing points on the graph
   for (let i = 0; i < 24 * forecastDays; i++) {
     strokeWeight(2);
     if (i % forecastDays != 0) {
@@ -100,7 +98,6 @@ function createWeatherGraph() {
     currY = originY - graphHeight/60 * weatherData[i];
     
     circle(currX, currY, 10);
-    prevY = currY;
   }
 }
 
@@ -111,14 +108,8 @@ function processWeatherData(data) {
   dateData = timeData.map(element => element.substring(5, 10))
   dateData = [...new Set(dateData)];
 
-  maxTemp = Math.max(...weatherData);
-  minTemp = Math.min(...weatherData);
-
-  console.log(maxTemp)
-  console.log(minTemp)
-
-  maxTemp = 5 * (Math.floor(maxTemp / 5) + 1)
-  minTemp = 5 * (Math.floor(minTemp / 5))
+  maxTemp = 5 * (Math.floor(Math.max(...weatherData) / 5) + 1)
+  minTemp = 5 * (Math.floor(Math.min(...weatherData) / 5))
 
   console.log(maxTemp)
   console.log(minTemp)
