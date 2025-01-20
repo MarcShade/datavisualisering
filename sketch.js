@@ -17,6 +17,10 @@ let minTemp;
 
 let boundary;
 
+const d = new Date();
+let hour = d.getHours();
+let currentTemp;
+
 const graphHeight = 500;
 const graphY = (canvasY - graphHeight) / 2;
 
@@ -54,7 +58,6 @@ function createWeatherGraph() {
   for (let i = 0; i <= boundary/5 * 2; i++) {
     let temp = -boundary + i*5;
     let iter = -boundary/5 + i*1
-    console.log(iter)
     line(40, originY - graphHeight/divisor * iter, canvasX - 20, originY - graphHeight/divisor * iter);
     strokeWeight(0)
     text(temp + "°", -32, originY - graphHeight/divisor * iter - 5, 100, 100);
@@ -114,6 +117,9 @@ function createWeatherGraph() {
     
     circle(currX, currY, 10);
   }
+
+  currentTemp = int(weatherData[hour])
+  console.log(currentTemp)
 }
 
 function processWeatherData(data) {
@@ -131,7 +137,6 @@ function processWeatherData(data) {
   // console.log(tempMax)
 
   boundary = Math.max(Math.abs(maxTemp), Math.abs(minTemp))
-  console.log("Bounday is set to " + boundary)
 
   // Fuck everything about this fix
   for (let i = 0; i < dateData.length; i++) {
@@ -143,7 +148,6 @@ function processWeatherData(data) {
   date = timeData[0].substring(0, 10);
 
   timeData = timeData.map(element => element.substring(11, 16))
-  console.log(data)
   createWeatherGraph()
 }
 
