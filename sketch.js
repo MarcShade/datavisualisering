@@ -15,6 +15,8 @@ let forecastDays = 1;
 let maxTemp;
 let minTemp;
 
+let boundary;
+
 const graphHeight = 500;
 const graphY = (canvasY - graphHeight) / 2;
 
@@ -44,12 +46,18 @@ function createWeatherGraph() {
   let originY = graphY + graphHeight/2;
 
   strokeWeight(1);
+  // boundary = 20
+  let tempSteps = (boundary + boundary) / 5 + 1;
+  let divisor = tempSteps
 
   // numbers on the y-axis and a line from every number
-  for (let i = -25; i < 30; i += 5) {
-    line(40, originY - graphHeight/60 * i, canvasX - 20, originY - graphHeight/60 * i);
+  for (let i = 0; i <= boundary/5 * 2; i++) {
+    let temp = -boundary + i*5;
+    let iter = -boundary/5 + i*1
+    console.log(iter)
+    line(40, originY - graphHeight/divisor * iter, canvasX - 20, originY - graphHeight/divisor * iter);
     strokeWeight(0)
-    text(i + "°", -32, originY - graphHeight/60 * i - 5, 100, 100);
+    text(temp + "°", -32, originY - graphHeight/divisor * iter - 5, 100, 100);
     strokeWeight(1)
   } 
 
@@ -60,7 +68,7 @@ function createWeatherGraph() {
   let prevY = null;
 
   // Drawing horizontal lines and dates on the graph
-  forecastDays = int(forecastDays)
+  forecastDays = int(forecastDays) // Fuck Javascript
   for (let i = 1; i <= forecastDays; i++) {
     if (i != forecastDays) {
       let x = 1000 / (forecastDays) * i + 40 * (forecastDays - i)/ forecastDays;
@@ -69,14 +77,18 @@ function createWeatherGraph() {
     text(dateData[i-1], 940/forecastDays * (i-1) + (1/(forecastDays * 2)) * 940, 100, 100, 100);
   }
 
+  let step;
+  if (forecastDays < 5) step = forecastDays
+  else step = 6;
+
   // Drawing the graph 
   for (let i = 0; i < 24 * forecastDays; i++) {
     strokeWeight(2);
-    if (i  % forecastDays != 0) {
+    if (i  % step != 0) {
       continue;
     }
     currX = originX + i * (canvasX-40)/(24 * forecastDays);
-    currY = originY - graphHeight/60 * weatherData[i];
+    currY = originY - graphHeight/divisor * (float(weatherData[i]))/5;
     if (prevX != null) {
       line(currX, currY, prevX, prevY);
     }
@@ -91,18 +103,20 @@ function createWeatherGraph() {
   // Drawing points on the graph
   for (let i = 0; i < 24 * forecastDays; i++) {
     strokeWeight(2);
-    if (i % forecastDays != 0) {
+    if (i % step != 0) {
       continue;
     }
+
+    // originY - graphHeight/divisor * iter,
+
     currX = originX + i * (canvasX-40)/(24 * forecastDays);
-    currY = originY - graphHeight/60 * weatherData[i];
+    currY = originY - graphHeight/divisor * (float(weatherData[i]))/5;
     
     circle(currX, currY, 10);
   }
 }
 
 function processWeatherData(data) {
-  console.log(data)
   weatherData = data.hourly.temperature_2m;
   timeData = data.hourly.time;
   dateData = timeData.map(element => element.substring(5, 10))
@@ -110,9 +124,14 @@ function processWeatherData(data) {
 
   maxTemp = 5 * (Math.floor(Math.max(...weatherData) / 5) + 1)
   minTemp = 5 * (Math.floor(Math.min(...weatherData) / 5))
+  // console.log("Max: " + maxTemp)
+  // console.log("Min: " + minTemp)
 
-  console.log(maxTemp)
-  console.log(minTemp)
+  // let tempMax = Math.max(...weatherData);
+  // console.log(tempMax)
+
+  boundary = Math.max(Math.abs(maxTemp), Math.abs(minTemp))
+  console.log("Bounday is set to " + boundary)
 
   // Fuck everything about this fix
   for (let i = 0; i < dateData.length; i++) {
@@ -124,6 +143,7 @@ function processWeatherData(data) {
   date = timeData[0].substring(0, 10);
 
   timeData = timeData.map(element => element.substring(11, 16))
+  console.log(data)
   createWeatherGraph()
 }
 
