@@ -35,10 +35,10 @@ function createWeatherGraph() {
 
   fill("white")
   stroke("darkgrey")
-
-
-  //Setting up the graph
   strokeWeight(5);
+
+
+  // Drawing up the graph
 
   // x-axis
   line(20, graphY + graphHeight, canvasX - 20, graphY + graphHeight);
@@ -50,11 +50,10 @@ function createWeatherGraph() {
   let originY = graphY + graphHeight/2;
 
   strokeWeight(1);
-  // boundary = 20
   let tempSteps = (boundary + boundary) / 5 + 1;
   let divisor = tempSteps
 
-  // numbers on the y-axis and a line from every number
+  // numbers on the y-axis and a line for every number
   for (let i = 0; i <= boundary/5 * 2; i++) {
     let temp = -boundary + i*5;
     let iter = -boundary/5 + i*1
@@ -110,35 +109,29 @@ function createWeatherGraph() {
       continue;
     }
 
-    // originY - graphHeight/divisor * iter,
-
     currX = originX + i * (canvasX-40)/(24 * forecastDays);
     currY = originY - graphHeight/divisor * (float(weatherData[i]))/5;
     
     circle(currX, currY, 10);
   }
-
+  // Storing the current temperature in a global variable for HTML-purposes
   currentTemp = int(weatherData[hour])
-  console.log(currentTemp)
 }
 
+// Function for processing the relevant weather data
 function processWeatherData(data) {
   weatherData = data.hourly.temperature_2m;
   timeData = data.hourly.time;
   dateData = timeData.map(element => element.substring(5, 10))
+  // Removing duplicates with a set
   dateData = [...new Set(dateData)];
 
   maxTemp = 5 * (Math.floor(Math.max(...weatherData) / 5) + 1)
   minTemp = 5 * (Math.floor(Math.min(...weatherData) / 5))
-  // console.log("Max: " + maxTemp)
-  // console.log("Min: " + minTemp)
-
-  // let tempMax = Math.max(...weatherData);
-  // console.log(tempMax)
 
   boundary = Math.max(Math.abs(maxTemp), Math.abs(minTemp))
 
-  // Fuck everything about this fix
+  // Wacky hack for switching the date format to the european standard
   for (let i = 0; i < dateData.length; i++) {
     let month = dateData[i].substring(0,2)
     let date = dateData[i].substring(3,5)
@@ -148,13 +141,16 @@ function processWeatherData(data) {
   date = timeData[0].substring(0, 10);
 
   timeData = timeData.map(element => element.substring(11, 16))
+  // Actually creating the graph
   createWeatherGraph()
 }
 
+// function for processing the relevant IP data.
 function processIPData(data) {
   longitude = data.longitude
   latitude = data.latitude
   
+  // Displaying your approximate city in HTML
   document.getElementById("city-text").innerHTML = data.city
   document.getElementById("region-text").innerHTML = `${data.region}, ${data.country}`
 
@@ -165,6 +161,7 @@ function setup() {
   mySelect = createSelect();
   mySelect.parent("content")
 
+  // Setting up the drop-down menu.
   for (let i = 1; i <= 7; i++) {
     mySelect.option(i);
   }
@@ -174,6 +171,7 @@ function setup() {
 
 let buffer = 0;
 
+// Retrieving the new data based on the selected forecast day
 function draw() {
   forecastDays = mySelect.value();
   if (forecastDays != buffer) {
