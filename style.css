@@ -38,17 +38,17 @@ html, body {
   padding: 0px 0px 200px 0px;
 }
 
-.location-text {
+.weather-text, .location-text, .forecast-days {
   font-family: Inter, sans-serif;
   color: white;
-  padding: 24px;
+  padding-top: 24px;
   margin: 0;
   text-align: center;
 }
 
-#region-text {
-  margin-top: 10px;
-  color: #C6C6C6
+.subtext {
+  color: #9897a1;
+  padding-top: 6px;
 }
 
 h3 {
@@ -66,6 +66,16 @@ div {
   margin: 0;
 }
 
-#canvas {
-  padding: 0px 0px 00px 0px;
+#forecast-days {
+  padding-bottom: 10px;
+  color: #9897a1;
+}
+
+select {
+  color: #9897a1;
+  background-color: #2D2F3F;
+  width: 60px;
+  height: 20px;
+  outline: none;
+  text-align: center; 
 }

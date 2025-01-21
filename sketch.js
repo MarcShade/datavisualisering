@@ -13,23 +13,54 @@ let date;
 let forecastDays = 1;
 
 let maxTemp;
-let minTemp;
+let minTemp;  
 
 let boundary;
 
 const d = new Date();
 let hour = d.getHours();
 let currentTemp;
+let currentWeatherCode
 
 const graphHeight = 500;
 const graphY = (canvasY - graphHeight) / 2;
 
+const weatherCodes = {
+  0: "Clear sky",
+  1: "Mostly clear",
+  2: "Partly cloudy",
+  3: "Overcast",
+  45: "Foggy",
+  48: "Freezing fog",
+  51: "Light drizzle",
+  53: "Moderate drizzle",
+  55: "Heavy drizzle",
+  56: "Light freezing drizzle",
+  57: "Heavy freezing drizzle",
+  61: "Light rain",
+  63: "Moderate rain",
+  65: "Heavy rain",
+  66: "Light freezing rain",
+  67: "Heavy freezing rain",
+  71: "Light snow",
+  73: "Moderate snow",
+  75: "Heavy snow",
+  77: "Snow grains",
+  80: "Light rain showers",
+  81: "Moderate rain showers",
+  82: "Heavy rain showers",
+  85: "Light snow showers",
+  86: "Heavy snow showers",
+  95: "Thunderstorm",
+  96: "Thunderstorm with small hail",
+  99: "Thunderstorm with heavy hail"
+};
+
 function createWeatherGraph() {
   let canvas = createCanvas(canvasX, canvasY);
   canvas.parent("#canvas")
-  loadFont("assets/Inter-Regular.woff2")
+  loadFont("assets/Inter-Regular.woff")
   textFont("Inter");
-  // background("#2D2F3F");
   textAlign(CENTER);
   textSize(16);
 
@@ -114,8 +145,10 @@ function createWeatherGraph() {
     
     circle(currX, currY, 10);
   }
-  // Storing the current temperature in a global variable for HTML-purposes
+  // Setting the current temperature and displaying it in HTML 
   currentTemp = int(weatherData[hour])
+  document.getElementById("current-temp").innerHTML = currentTemp + "°C"
+  document.getElementById("current-weather").innerHTML = weatherCodes[currentWeatherCode]
 }
 
 // Function for processing the relevant weather data
@@ -125,6 +158,7 @@ function processWeatherData(data) {
   dateData = timeData.map(element => element.substring(5, 10))
   // Removing duplicates with a set
   dateData = [...new Set(dateData)];
+  currentWeatherCode = data.current.weather_code
 
   maxTemp = 5 * (Math.floor(Math.max(...weatherData) / 5) + 1)
   minTemp = 5 * (Math.floor(Math.min(...weatherData) / 5))
@@ -150,7 +184,7 @@ function processIPData(data) {
   longitude = data.longitude
   latitude = data.latitude
   
-  // Displaying your approximate city in HTML
+  // Displaying your approximate location and current weather information in HTML
   document.getElementById("city-text").innerHTML = data.city
   document.getElementById("region-text").innerHTML = `${data.region}, ${data.country}`
 
@@ -159,14 +193,14 @@ function processIPData(data) {
 
 function setup() {
   mySelect = createSelect();
-  mySelect.parent("content")
+  mySelect.parent("forecast-days")
 
   // Setting up the drop-down menu.
   for (let i = 1; i <= 7; i++) {
     mySelect.option(i);
   }
 
-  loadJSON("https://ipgeolocation.abstractapi.com/v1?api_key=3ed637e3f8c24a1eb43b916fbc212d78", processIPData);
+  loadJSON("https://get.geojs.io/v1/ip/geo.json", processIPData);
 }
 
 let buffer = 0;
@@ -175,7 +209,7 @@ let buffer = 0;
 function draw() {
   forecastDays = mySelect.value();
   if (forecastDays != buffer) {
-    loadJSON(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&forecast_days=${forecastDays}`, processWeatherData);
+    loadJSON(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&forecast_days=${forecastDays}&current=weather_code`, processWeatherData);
   }
   buffer = forecastDays;
 }
